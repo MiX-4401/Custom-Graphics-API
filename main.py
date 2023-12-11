@@ -131,7 +131,13 @@ class Main():
                 exit()
 
     def garbage_collection(self):
-        pass
+        self.ctx.release()
+        for key in self.programs:
+            self.programs[key].release()
+        for key in self.vaos:
+            self.programs[key].release()
+        for key in self.buffers:
+            self.programs[key].release()
 
     def run(self):
         while True:
