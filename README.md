@@ -1,0 +1,2 @@
+This mini-project is a tiny wrapper for Modenrgl GL (python) to replace pygame's surface class.
+This is done so rendering can be done completely on the GPU and reduce data overhead when converting surfaces to mgl textures.
