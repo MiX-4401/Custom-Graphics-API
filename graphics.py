@@ -104,7 +104,7 @@ class Canvas:
         program["sourceTexture"] = 0
         program["pos"]           = (pos[0] + source.size[0] / 2, pos[1] + source.size[1] / 2)
         program["textureSize"]   = self.size
-        Program["sourceSize"]    = self.source.size
+        program["sourceSize"]    = source.size
 
         # Render
         vao.render(mode=mgl.TRIANGLE_STRIP)
@@ -115,11 +115,12 @@ class Canvas:
         ctx.screen.use()
         
     def use(self, location:int=0):
+        self.sync()
         self.texture.use(location=location)
 
     def sync(self):
         if not self.synced:
-            self.framebuffer.read_into(buffer=self.texture, components=self.channels, attachment=0)
+            self.texture.write(data=self.framebuffer.read(components=self.channels, attachment=0))
             self.synced = True
 
     def __str__(self):
@@ -142,9 +143,9 @@ class Canvas:
         canvas: Canvas = Canvas()
         canvas.size:   tuple = size
         canvas.channels: int = channels
-        canvas.renderbuffer: mgl.Renderbuffer = ctx.renderbuffer(size=size, components=channels)
+        canvas.renderbuffer: mgl.Renderbuffer = ctx.renderbuffer(size=canvas.size, components=canvas.channels)
         canvas.framebuffer:  mgl.Framebuffer  = ctx.framebuffer(color_attachments=canvas.renderbuffer)
-        canvas.texture:      mgl.Texture      = ctx.texture(size=self.size, components=self.channels)
+        canvas.texture:      mgl.Texture      = ctx.texture(size=canvas.size, components=canvas.channels)
         canvas.texture.filter: tuple          = (mgl.NEAREST, mgl.NEAREST)
         
         canvas.loaded = True

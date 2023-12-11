@@ -35,6 +35,8 @@ class Main():
         self.load_vaos()
         self.load_graphics()
 
+        self.create()
+
     def load_shader_data(self):
         paths: dict = Main.shader_paths
 
@@ -78,6 +80,7 @@ class Main():
 
     def load_graphics(self):
         Texture.init(ctx=self.ctx, program=self.programs["blitting"], vao=self.vaos["blitting"])
+        Canvas.init(ctx=self.ctx, program=self.programs["blitting"], vao=self.vaos["blitting"])
 
     def load_programs(self):
         self.programs["blitting"]: mgl.Program = self.ctx.program(vertex_shader=self.shaders["blitting"]["vert"], fragment_shader=self.shaders["main"]["frag"])
@@ -85,19 +88,21 @@ class Main():
     def load_vaos(self):
         self.vaos["blitting"]: mgl.VertexArray = self.ctx.vertex_array(self.programs["blitting"], [(self.buffers["main"], "2f 2f", "aPosition", "aTexCoord")])
 
+    def create(self):
+        self.sprite_1: Texture = Texture.load(path=r"images\0TextureWall.png")
+        self.canvas_1: Canvas  = Canvas.load(size=self.screen.get_size())
+
+        self.canvas_1.blit(source=self.sprite_1, pos=(0,0))
 
     def update(self):
         pygame.display.set_caption(title=f"Custom Graphics API | FPS: {round(self.clock.get_fps())}")
     
     def draw(self):
 
-        sprite_1: Texture = Texture.load(path=r"images\0TextureWall.png")
-
         self.ctx.screen.use()
 
-        sprite_1.use(location=0)
+        self.canvas_1.use()
         self.programs["main"]["sourceTexture"] = 0
-
         self.vaos["main"].render(mode=mgl.TRIANGLE_STRIP)
         pygame.display.flip()
 
