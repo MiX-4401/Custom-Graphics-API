@@ -102,23 +102,22 @@ class Main():
     def create(self):
         self.sprite_1: Texture = Texture.load(path=r"images\0TextureWall.png")
         self.canvas_1: Canvas  = Canvas.load(size=self.screen.get_size())
-        self.canvas_3: Canvas  = Canvas.load(size=self.screen.get_size())
 
-        self.canvas_1.blit(source=self.sprite_1, pos=(0,0))
+        self.sprite_2: Texture = Transform.scale(surface=self.sprite_1, size=(self.sprite_1.size[0]//2, self.sprite_1.size[1]//2))
 
-        size: tuple = (self.canvas_1.size[0]//2, self.canvas_1.size[1]//2)
-        self.canvas_2: Canvas = Transform.scale(surface=self.canvas_1, size=size)
-
-        self.canvas_3.blit(source=self.canvas_2, pos=(0,0))
-
+        pos: tuple = (self.canvas_1.size[0]//2-self.sprite_2.size[0]//2, self.canvas_1.size[1]//2-self.sprite_2.size[1]//2)
+        self.canvas_1.fill(colour=(49,95,176))
+        self.canvas_1.blit(source=self.sprite_2, pos=pos)
+        
     def update(self):
         pygame.display.set_caption(title=f"Custom Graphics API | FPS: {round(self.clock.get_fps())}")
+        print(pygame.mouse.get_pos())
 
     def draw(self):
 
         self.ctx.screen.use()
 
-        self.canvas_3.use()
+        self.canvas_1.use()
         self.programs["main"]["sourceTexture"] = 0
         self.vaos["main"].render(mode=mgl.TRIANGLE_STRIP)
         pygame.display.flip()
