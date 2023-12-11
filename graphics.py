@@ -1,6 +1,7 @@
 import moderngl as mgl
 import numpy as np
 from PIL import Image
+from typing import Union
 
 class Texture:
     ctx: mgl.Context     = None
@@ -23,8 +24,7 @@ class Texture:
         # Bind framebuffer and source texture
         self.framebuffer.use()
         
-        source.sync()
-        source.texture.use(location=0)
+        source.use(location=0)
 
         # Set uniforms
         program["sourceTexture"] = 0
@@ -57,8 +57,8 @@ class Texture:
     def get_components(cls) -> (mgl.Context, mgl.Program, mgl.VertexArray):
         return cls.ctx, cls.program, cls.vao
 
-    @classmethod
-    def load(self, path:str):
+    @staticmethod
+    def load(path:str):
         ctx, program, vao = Texture.get_components() 
 
         image:   Image = Image.open(path)
@@ -70,10 +70,25 @@ class Texture:
         texture.filter:   tuple       = (mgl.NEAREST, mgl.NEAREST)
         texture.framebuffer: mgl.Framebuffer = ctx.framebuffer(color_attachments=texture.texture)
 
-        self.loaded = True
+        texture.loaded = True
 
         return texture
 
+    @staticmethod
+    def load_blank(size:tuple, channels:int=4):
+        ctx, program, vao = Texture.get_components() 
+
+        texture: Texture = Texture()
+        
+        texture.size:     tuple = size
+        texture.channels: int   = channels
+        texture.texture:  mgl.Texture = ctx.texture(size=size, components=channels)
+        texture.filter:   tuple       = (mgl.NEAREST, mgl.NEAREST)
+        texture.framebuffer: mgl.Framebuffer = ctx.framebuffer(color_attachments=texture.texture)
+
+        texture.loaded = True
+
+        return texture
 
 class Canvas:
     ctx: mgl.Context     = None
@@ -97,8 +112,7 @@ class Canvas:
         # Bind framebuffer and source texture
         self.framebuffer.use()
 
-        source.sync()
-        source.texture.use(location=0)
+        source.use(location=0)
 
         # Set uniforms
         program["sourceTexture"] = 0
@@ -118,12 +132,10 @@ class Canvas:
         colour: tuple = tuple([c/225 for c in colour])
         self.framebuffer.clear(red=colour[0], green=colour[1], blue=colour[2], alpha=1.0)
         self.synced = False
-        self.sync()
 
     def clear(self):
         self.framebuffer.clear(red=0.0, green=0.0, blue=0.0, alpha=1.0)
         self.synced = False
-        self.sync()
 
     def use(self, location:int=0):
         self.sync()
@@ -147,8 +159,8 @@ class Canvas:
     def get_components(cls) -> (mgl.Context, mgl.Program, mgl.VertexArray):
         return cls.ctx, cls.program, cls.vao
 
-    @classmethod
-    def load(self, size:tuple, channels:int=4):
+    @staticmethod
+    def load(size:tuple, channels:int=4):
         ctx, program, vao = Canvas.get_components() 
 
         canvas: Canvas = Canvas()
@@ -162,4 +174,43 @@ class Canvas:
         canvas.loaded = True
 
         return canvas
+
+class Transform:
+    
+    ctx: mgl.Context = None
+    programs: dict   = None
+    vaos:     dict   = None
+
+    @staticmethod
+    def scale(surface:Union[Texture, Canvas], size:tuple) -> Union[Texture, Canvas]:
+        ctx, programs, vaos = Transform.get_components()
+        
+        if type(surface) == Texture:
+            scaled_surface: Texture = Texture.load_blank(size=size, channels=surface.channels)
+        elif type(surface) == Canvas:
+            scaled_surface: Canvas = Canvas.load(size=size, channels=surface.channels)
+
+        # Bind framebuffer and source texture
+        scaled_surface.framebuffer.use()
+        surface.use(location=0)
+
+        # Set uniforms
+        programs["scale"]["sourceTexture"] = 0
+
+        # Render
+        vaos["scale"].render(mgl.TRIANGLE_STRIP)
+
+        scaled_surface.synced = False
+
+        return scaled_surface
+
+    @classmethod
+    def init(cls, ctx:mgl.Context, programs:list, vaos:list):
+        cls.ctx = ctx
+        cls.programs = programs
+        cls.vaos = vaos
+     
+    @classmethod
+    def get_components(cls):
+        return cls.ctx, cls.programs, cls.vaos
 
