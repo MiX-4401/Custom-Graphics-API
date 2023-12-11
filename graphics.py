@@ -113,7 +113,18 @@ class Canvas:
 
         # Unbind framebuffer
         ctx.screen.use()
-        
+
+    def fill(self, colour:tuple=(0,0,0)):
+        colour: tuple = tuple([c/225 for c in colour])
+        self.framebuffer.clear(red=colour[0], green=colour[1], blue=colour[2], alpha=1.0)
+        self.synced = False
+        self.sync()
+
+    def clear(self):
+        self.framebuffer.clear(red=0.0, green=0.0, blue=0.0, alpha=1.0)
+        self.synced = False
+        self.sync()
+
     def use(self, location:int=0):
         self.sync()
         self.texture.use(location=location)

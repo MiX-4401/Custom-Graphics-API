@@ -35,6 +35,8 @@ class Main():
         self.load_vaos()
         self.load_graphics()
 
+        self.pos = [0,0]
+
         self.create()
 
     def load_shader_data(self):
@@ -96,7 +98,11 @@ class Main():
 
     def update(self):
         pygame.display.set_caption(title=f"Custom Graphics API | FPS: {round(self.clock.get_fps())}")
-    
+
+        self.canvas_1.clear()
+        self.canvas_1.blit(source=self.sprite_1, pos=(self.pos))
+        self.pos[0] += 0.5
+
     def draw(self):
 
         self.ctx.screen.use()
