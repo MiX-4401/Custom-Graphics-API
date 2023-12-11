@@ -9,7 +9,11 @@ class Main():
         "main": {
             "frag": r"shaders\display.frag", 
             "vert": r"shaders\display.vert"
-        }   
+        },
+        "blitting": {
+            "frag": None,
+            "vert": r"shaders\blitting.vert"
+        }
     }
 
     def __init__(self):
@@ -27,6 +31,9 @@ class Main():
         self.load_shader_data()
         self.load_pygame()
         self.load_moderngl()
+        self.load_programs()
+        self.load_vaos()
+        self.load_graphics()
 
     def load_shader_data(self):
         paths: dict = Main.shader_paths
@@ -52,7 +59,7 @@ class Main():
         """
         Load the pygame variables for window
         """
-        self.screen = pygame.display.set_mode((500, 500), pygame.DOUBLEBUF | pygame.OPENGL)
+        self.screen = pygame.display.set_mode((700, 700), pygame.DOUBLEBUF | pygame.OPENGL)
         pygame.display.set_caption(title="Custom Graphics API | FPS: 0")
         self.clock  = pygame.time.Clock()
         self.fps    = 120
@@ -69,13 +76,29 @@ class Main():
         
         self.ctx.wireframe = False
 
-    
+    def load_graphics(self):
+        Texture.init(ctx=self.ctx, program=self.programs["blitting"], vao=self.vaos["blitting"])
+
+    def load_programs(self):
+        self.programs["blitting"]: mgl.Program = self.ctx.program(vertex_shader=self.shaders["blitting"]["vert"], fragment_shader=self.shaders["main"]["frag"])
+
+    def load_vaos(self):
+        self.vaos["blitting"]: mgl.VertexArray = self.ctx.vertex_array(self.programs["blitting"], [(self.buffers["main"], "2f 2f", "aPosition", "aTexCoord")])
+
+
     def update(self):
         pygame.display.set_caption(title=f"Custom Graphics API | FPS: {round(self.clock.get_fps())}")
     
     def draw(self):
 
+        sprite_1: Texture = Texture.load(path=r"images\0TextureWall.png")
 
+        self.ctx.screen.use()
+
+        sprite_1.use(location=0)
+        self.programs["main"]["sourceTexture"] = 0
+
+        self.vaos["main"].render(mode=mgl.TRIANGLE_STRIP)
         pygame.display.flip()
 
 
