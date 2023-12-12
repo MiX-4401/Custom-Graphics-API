@@ -111,7 +111,7 @@ class Main():
         
     def update(self):
         pygame.display.set_caption(title=f"Custom Graphics API | FPS: {round(self.clock.get_fps())}")
-        print(pygame.mouse.get_pos())
+        # print(pygame.mouse.get_pos())
 
     def draw(self):
 
