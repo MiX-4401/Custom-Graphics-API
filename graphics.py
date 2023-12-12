@@ -202,7 +202,37 @@ class Transform:
 
         scaled_surface.synced = False
 
+        # Unbind
+        ctx.screen.use()
+
         return scaled_surface
+
+    @staticmethod
+    def flip(surface:Union[Texture, Canvas], x_flip:bool=False, y_flip:bool=False) -> Union[Texture, Canvas]:
+        ctx, programs, vaos = Transform.get_components()
+        
+        if type(surface) == Texture:
+            new_surface: Texture = Texture.load_blank(size=size, channels=surface.channels)
+        elif type(surface) == Canvas:
+            new_surface: Canvas = Canvas.load(size=surface.size, channels=surface.channels)
+
+        # Bind framebuffer and source texture
+        new_surface.framebuffer.use()
+        surface.use(location=0)
+
+        # Set uniforms
+        programs["flip"]["xFlip"] = x_flip
+        programs["flip"]["yFlip"] = y_flip
+
+        # Render
+        vaos["flip"].render(mgl.TRIANGLE_STRIP)
+
+        new_surface.synced = False
+
+        # Unbind
+        ctx.screen.use()
+
+        return new_surface
 
     @classmethod
     def init(cls, ctx:mgl.Context, programs:list, vaos:list):

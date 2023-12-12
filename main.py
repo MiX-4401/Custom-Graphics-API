@@ -13,6 +13,10 @@ class Main():
         "blitting": {
             "frag": None,
             "vert": r"shaders\blitting.vert"
+        },
+        "flip": {
+            "frag": None,
+            "vert": r"shaders\flip.vert"
         }
     }
 
@@ -86,18 +90,22 @@ class Main():
         Transform.init(
             ctx=self.ctx, 
             programs={
-                "scale": self.programs["main"]
+                "scale": self.programs["main"],
+                "flip":  self.programs["flip"]
             }, 
             vaos={
-                "scale": self.vaos["main"]
+                "scale": self.vaos["main"],
+                "flip":  self.vaos["flip"]
             }
         )
 
     def load_programs(self):
         self.programs["blitting"]: mgl.Program = self.ctx.program(vertex_shader=self.shaders["blitting"]["vert"], fragment_shader=self.shaders["main"]["frag"])
+        self.programs["flip"]:     mgl.Program = self.ctx.program(vertex_shader=self.shaders["flip"]["vert"], fragment_shader=self.shaders["main"]["frag"])
 
     def load_vaos(self):
         self.vaos["blitting"]: mgl.VertexArray = self.ctx.vertex_array(self.programs["blitting"], [(self.buffers["main"], "2f 2f", "aPosition", "aTexCoord")])
+        self.vaos["flip"]:     mgl.VertexArray = self.ctx.vertex_array(self.programs["flip"], [(self.buffers["main"], "2f 2f", "aPosition", "aTexCoord")])
 
     def create(self):
         self.sprite_1: Texture = Texture.load(path=r"images\0TextureWall.png")
@@ -105,9 +113,11 @@ class Main():
 
         self.sprite_2: Texture = Transform.scale(surface=self.sprite_1, size=(self.sprite_1.size[0]//2, self.sprite_1.size[1]//2))
 
-        pos: tuple = (self.canvas_1.size[0]//2-self.sprite_2.size[0]//2, self.canvas_1.size[1]//2-self.sprite_2.size[1]//2)
+        pos: tuple = (self.canvas_1.size[0]//2-self.sprite_2.size[0]//2, self.canvas_1.size[1]//2-self.sprite_2.size[1])
         self.canvas_1.fill(colour=(49,95,176))
         self.canvas_1.blit(source=self.sprite_2, pos=pos)
+
+        self.canvas_2: Canvas = Transform.flip(surface=self.canvas_1, y_flip=True)
         
     def update(self):
         pygame.display.set_caption(title=f"Custom Graphics API | FPS: {round(self.clock.get_fps())}")
@@ -117,7 +127,7 @@ class Main():
 
         self.ctx.screen.use()
 
-        self.canvas_1.use()
+        self.canvas_2.use()
         self.programs["main"]["sourceTexture"] = 0
         self.vaos["main"].render(mode=mgl.TRIANGLE_STRIP)
         pygame.display.flip()
