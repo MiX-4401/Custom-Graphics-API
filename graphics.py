@@ -31,7 +31,7 @@ class Texture:
         program["sourceTexture"] = 0
         program["pos"]           = (pos[0] + source.size[0] / 2, pos[1] + source.size[1] / 2)
         program["textureSize"]   = self.size
-        Program["sourceSize"]    = self.source.size
+        program["sourceSize"]    = source.size
 
         # Render
         vao.render(mode=mgl.TRIANGLE_STRIP)
@@ -39,6 +39,12 @@ class Texture:
         # Unbind framebuffer
         ctx.screen.use()
         
+    def fill(self, colour:tuple=(0,0,0)):
+        colour: tuple = tuple([c/225 for c in colour])
+        self.framebuffer.clear(red=colour[0], green=colour[1], blue=colour[2], alpha=1.0)
+        self.synced = False
+
+
     def use(self, location:int=0):
         self.texture.use(location=location)
 
