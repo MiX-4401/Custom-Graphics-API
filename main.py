@@ -67,7 +67,7 @@ class Main():
         """
         Load the pygame variables for window
         """
-        self.screen = pygame.display.set_mode((700, 700), pygame.DOUBLEBUF | pygame.OPENGL)
+        self.screen = pygame.display.set_mode((540, 540), pygame.DOUBLEBUF | pygame.OPENGL)
         pygame.display.set_caption(title="Custom Graphics API | FPS: 0")
         self.clock  = pygame.time.Clock()
         self.fps    = 120
@@ -111,13 +111,15 @@ class Main():
         self.sprite_1: Texture = Texture.load(path=r"images\0TextureWall.png")
         self.canvas_1: Canvas  = Canvas.load(size=self.screen.get_size())
 
-        self.sprite_2: Texture = Transform.scale(surface=self.sprite_1, size=(self.sprite_1.size[0]//2, self.sprite_1.size[1]//2))
+        self.sprite_2: Texture = Texture.load(path=r"C:\Users\ejrad\OneDrive\All Documents\Documents\01 Documents\Python\04Projects\Game\assets\sprites\tiles_0.png")
+        self.sprite_2: Texture = Transform.scale(surface=self.sprite_2, size=(self.sprite_2.size[0]*4,self.sprite_2.size[1]*4))
 
-        pos: tuple = (self.canvas_1.size[0]//2-self.sprite_2.size[0]//2, self.canvas_1.size[1]//2-self.sprite_2.size[1])
-        self.canvas_1.fill(colour=(49,95,176))
-        self.canvas_1.blit(source=self.sprite_2, pos=pos)
-
-        self.canvas_2: Canvas = Transform.flip(surface=self.canvas_1, y_flip=True)
+        pos:     tuple = (self.canvas_1.size[0]//2-self.sprite_2.size[0]//2, self.canvas_1.size[1]//2-self.sprite_2.size[1]//2)
+        scissor: tuple = (pos[0],pos[1], 64,64)
+        # scissor: tuple = None
+        self.canvas_1.fill(colour=(50,90,110))
+        self.canvas_1.blit(source=self.sprite_1, area=scissor)
+        self.canvas_1.blit(source=self.sprite_2, pos=pos, area=scissor)
         
     def update(self):
         pygame.display.set_caption(title=f"Custom Graphics API | FPS: {round(self.clock.get_fps())}")
@@ -127,7 +129,7 @@ class Main():
 
         self.ctx.screen.use()
 
-        self.canvas_2.use()
+        self.canvas_1.use()
         self.programs["main"]["sourceTexture"] = 0
         self.vaos["main"].render(mode=mgl.TRIANGLE_STRIP)
         pygame.display.flip()
@@ -155,6 +157,7 @@ class Main():
             self.update()
             self.draw()
             self.clock.tick(self.fps)
+            # print(pygame.mouse.get_pos())
 
 if __name__ == "__main__":
     Main: Main = Main()

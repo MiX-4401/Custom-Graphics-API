@@ -17,12 +17,13 @@ class Texture:
         self.framebuffer: mlg.Framebuffer = None
         
 
-    def blit(self, source, pos:tuple=(0,0)):
+    def blit(self, source, pos:tuple=(0,0), area:tuple=None):
 
         ctx, program, vao = Texture.get_components() 
 
         # Bind framebuffer and source texture
         self.framebuffer.use()
+        self.framebuffer.scissor: tuple = (area[0], self.texture.size[1] - area[1] - area[3], area[2], area[3]) if area != None else None
         
         source.use(location=0)
 
@@ -61,7 +62,7 @@ class Texture:
     def load(path:str):
         ctx, program, vao = Texture.get_components() 
 
-        image:   Image = Image.open(path)
+        image:   Image = Image.open(path).transpose(Image.FLIP_TOP_BOTTOM)
         texture: Texture = Texture()
         
         texture.size:     tuple = image.size
@@ -105,12 +106,13 @@ class Canvas:
         self.texture:      mgl.Texture      = None
         
 
-    def blit(self, source, pos:tuple=(0,0)):
+    def blit(self, source, pos:tuple=(0,0), area:tuple=None):
 
         ctx, program, vao = Canvas.get_components() 
 
         # Bind framebuffer and source texture
         self.framebuffer.use()
+        self.framebuffer.scissor: tuple = (area[0], self.texture.size[1] - area[1] - area[3], area[2], area[3]) if area != None else None
 
         source.use(location=0)
 
@@ -212,7 +214,7 @@ class Transform:
         ctx, programs, vaos = Transform.get_components()
         
         if type(surface) == Texture:
-            new_surface: Texture = Texture.load_blank(size=size, channels=surface.channels)
+            new_surface: Texture = Texture.load_blank(size=surface.size, channels=surface.channels)
         elif type(surface) == Canvas:
             new_surface: Canvas = Canvas.load(size=surface.size, channels=surface.channels)
 
