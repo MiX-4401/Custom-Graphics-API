@@ -113,14 +113,15 @@ class Main():
 
         self.sprite_2: Texture = Texture.load(path=r"C:\Users\ejrad\OneDrive\All Documents\Documents\01 Documents\Python\04Projects\Game\assets\sprites\tiles_0.png")
         self.sprite_2: Texture = Transform.scale(surface=self.sprite_2, size=(self.sprite_2.size[0]*4,self.sprite_2.size[1]*4))
+        self.sprite_3: Texture = Texture.load_blank(size=(64,64))
 
         pos:     tuple = (self.canvas_1.size[0]//2-self.sprite_2.size[0]//2, self.canvas_1.size[1]//2-self.sprite_2.size[1]//2)
-        scissor: tuple = (pos[0],pos[1], 64,64)
+        scissor: tuple = (0,0, 64, 64)
         # scissor: tuple = None
-        self.canvas_1.fill(colour=(50,90,110))
-        self.canvas_1.blit(source=self.sprite_1, area=scissor)
-        self.canvas_1.blit(source=self.sprite_2, pos=pos, area=scissor)
-        
+        self.canvas_1.fill(colour=(50,90,110,225))
+        self.sprite_3.blit(source=self.sprite_2, pos=(-2*64,0), area=scissor)
+        self.canvas_1.blit(source=self.sprite_3, pos=(0,0))
+
     def update(self):
         pygame.display.set_caption(title=f"Custom Graphics API | FPS: {round(self.clock.get_fps())}")
         # print(pygame.mouse.get_pos())
