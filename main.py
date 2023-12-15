@@ -81,7 +81,7 @@ class Main():
         self.buffers["main"]:  mgl.Buffer      = self.ctx.buffer(np.array([-1.0, -1.0, 0.0, 0.0, 1.0, -1.0, 1.0, 0.0,-1.0,  1.0, 0.0, 1.0, 1.0,  1.0, 1.0, 1.0], dtype='f4'))
         self.programs["main"]: mgl.Program     = self.ctx.program(vertex_shader=self.shaders["main"]["vert"], fragment_shader=self.shaders["main"]["frag"]) 
         self.vaos["main"]:     mgl.VertexArray = self.ctx.vertex_array(self.programs["main"], [(self.buffers["main"], "2f 2f", "aPosition", "aTexCoord")])
-        
+        self.ctx.enable(mgl.BLEND)
         self.ctx.wireframe = False
 
     def load_graphics(self):
@@ -108,19 +108,12 @@ class Main():
         self.vaos["flip"]:     mgl.VertexArray = self.ctx.vertex_array(self.programs["flip"], [(self.buffers["main"], "2f 2f", "aPosition", "aTexCoord")])
 
     def create(self):
-        self.sprite_1: Texture = Texture.load(path=r"images\0TextureWall.png")
+        self.sprite_1: Texture = Texture.load(path=r"images\0TextureSomething.png")
         self.canvas_1: Canvas  = Canvas.load(size=self.screen.get_size())
 
-        self.sprite_2: Texture = Texture.load(path=r"C:\Users\ejrad\OneDrive\All Documents\Documents\01 Documents\Python\04Projects\Game\assets\sprites\tiles_0.png")
-        self.sprite_2: Texture = Transform.scale(surface=self.sprite_2, size=(self.sprite_2.size[0]*4,self.sprite_2.size[1]*4))
-        self.sprite_3: Texture = Texture.load_blank(size=(64,64))
-
-        pos:     tuple = (self.canvas_1.size[0]//2-self.sprite_2.size[0]//2, self.canvas_1.size[1]//2-self.sprite_2.size[1]//2)
-        scissor: tuple = (0,0, 64, 64)
-        # scissor: tuple = None
-        self.canvas_1.fill(colour=(50,90,110,225))
-        self.sprite_3.blit(source=self.sprite_2, pos=(-2*64,0), area=scissor)
-        self.canvas_1.blit(source=self.sprite_3, pos=(0,0))
+        self.sprite_1: Texture = Transform.scale(source=self.sprite_1, size=(self.sprite_1.size[0]*12,self.sprite_1.size[1]*12))
+        print(self.sprite_1.texture.filter, (mgl.NEAREST, mgl.NEAREST), (mgl.LINEAR, mgl.LINEAR))
+        self.canvas_1.blit(source=self.sprite_1)
 
     def update(self):
         pygame.display.set_caption(title=f"Custom Graphics API | FPS: {round(self.clock.get_fps())}")
