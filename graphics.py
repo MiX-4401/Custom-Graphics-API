@@ -91,7 +91,7 @@ class Texture:
         texture.size:     tuple = size
         texture.channels: int   = channels
         texture.texture:  mgl.Texture = ctx.texture(size=size, components=channels)
-        texture.filter:   tuple       = (mgl.NEAREST, mgl.NEAREST)
+        texture.texture.filter: tuple = (mgl.NEAREST, mgl.NEAREST)
         texture.framebuffer: mgl.Framebuffer = ctx.framebuffer(color_attachments=texture.texture)
 
         texture.loaded = True
