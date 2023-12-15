@@ -17,6 +17,14 @@ class Main():
         "flip": {
             "frag": None,
             "vert": r"shaders\flip.vert"
+        },
+        "uvs_1": {
+            "frag": r"shaders\uvs_1.frag",
+            "vert": None
+        },
+        "uvs_2": {
+            "frag": r"shaders\uvs_2.frag",
+            "vert": None
         }
     }
 
@@ -24,6 +32,7 @@ class Main():
         self.screen: pygame.Surface    = None
         self.clock:  pygame.time.Clock = None
         self.fps:    int               = None
+        self.time:   float             = None
 
         self.shaders:          dict        = None
         self.ctx:              mgl.Context = None
@@ -71,6 +80,7 @@ class Main():
         pygame.display.set_caption(title="Custom Graphics API | FPS: 0")
         self.clock  = pygame.time.Clock()
         self.fps    = 120
+        self.time   = 0.0
 
     def load_moderngl(self):
         """
@@ -100,24 +110,30 @@ class Main():
         )
 
     def load_programs(self):
-        self.programs["blitting"]: mgl.Program = self.ctx.program(vertex_shader=self.shaders["blitting"]["vert"], fragment_shader=self.shaders["main"]["frag"])
-        self.programs["flip"]:     mgl.Program = self.ctx.program(vertex_shader=self.shaders["flip"]["vert"], fragment_shader=self.shaders["main"]["frag"])
+        self.programs["blitting"]:   mgl.Program = self.ctx.program(vertex_shader=self.shaders["blitting"]["vert"], fragment_shader=self.shaders["main"]["frag"])
+        self.programs["flip"]:       mgl.Program = self.ctx.program(vertex_shader=self.shaders["flip"]["vert"],     fragment_shader=self.shaders["main"]["frag"])
+        self.programs["uvs_1"]:      mgl.Program = self.ctx.program(vertex_shader=self.shaders["main"]["vert"],     fragment_shader=self.shaders["uvs_1"]["frag"])
+        self.programs["uvs_2"]:      mgl.Program = self.ctx.program(vertex_shader=self.shaders["main"]["vert"],     fragment_shader=self.shaders["uvs_2"]["frag"])
 
     def load_vaos(self):
         self.vaos["blitting"]: mgl.VertexArray = self.ctx.vertex_array(self.programs["blitting"], [(self.buffers["main"], "2f 2f", "aPosition", "aTexCoord")])
-        self.vaos["flip"]:     mgl.VertexArray = self.ctx.vertex_array(self.programs["flip"], [(self.buffers["main"], "2f 2f", "aPosition", "aTexCoord")])
+        self.vaos["flip"]:     mgl.VertexArray = self.ctx.vertex_array(self.programs["flip"],     [(self.buffers["main"], "2f 2f", "aPosition", "aTexCoord")])
+        self.vaos["uvs_1"]:    mgl.VertexArray = self.ctx.vertex_array(self.programs["uvs_1"],    [(self.buffers["main"], "2f 2f", "aPosition", "aTexCoord")])
+        self.vaos["uvs_2"]:    mgl.VertexArray = self.ctx.vertex_array(self.programs["uvs_2"],    [(self.buffers["main"], "2f 2f", "aPosition", "aTexCoord")])
 
     def create(self):
         self.sprite_1: Texture = Texture.load(path=r"images\0TextureSomething.png")
         self.canvas_1: Canvas  = Canvas.load(size=self.screen.get_size())
 
         self.sprite_1: Texture = Transform.scale(source=self.sprite_1, size=(self.sprite_1.size[0]*12,self.sprite_1.size[1]*12))
-        print(self.sprite_1.texture.filter, (mgl.NEAREST, mgl.NEAREST), (mgl.LINEAR, mgl.LINEAR))
-        self.canvas_1.blit(source=self.sprite_1)
+
 
     def update(self):
         pygame.display.set_caption(title=f"Custom Graphics API | FPS: {round(self.clock.get_fps())}")
         # print(pygame.mouse.get_pos())
+        self.time += 1.0
+        self.sprite_1.shader(program=self.programs["uvs_1"], vao=self.vaos["uvs_1"], uniforms={"time": self.time})
+
 
     def draw(self):
 
