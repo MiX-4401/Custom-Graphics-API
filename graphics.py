@@ -217,17 +217,17 @@ class Transform:
         return scaled_surface
 
     @staticmethod
-    def flip(surface:Union[Texture, Canvas], x_flip:bool=False, y_flip:bool=False) -> Union[Texture, Canvas]:
+    def flip(source:Union[Texture, Canvas], x_flip:bool=False, y_flip:bool=False) -> Union[Texture, Canvas]:
         ctx, programs, vaos = Transform.get_components()
         
-        if type(surface) == Texture:
-            new_surface: Texture = Texture.load_blank(size=surface.size, channels=surface.channels)
-        elif type(surface) == Canvas:
-            new_surface: Canvas = Canvas.load(size=surface.size, channels=surface.channels)
+        if type(source) == Texture:
+            new_surface: Texture = Texture.load_blank(size=source.size, channels=source.channels)
+        elif type(source) == Canvas:
+            new_surface: Canvas = Canvas.load(size=source.size, channels=source.channels)
 
         # Bind framebuffer and source texture
         new_surface.framebuffer.use()
-        surface.use(location=0)
+        source.use(location=0)
 
         # Set uniforms
         programs["flip"]["xFlip"] = x_flip
