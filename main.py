@@ -126,7 +126,7 @@ class Main():
         self.canvas_1: Canvas  = Canvas.load(size=self.screen.get_size())
 
         self.sprite_1: Texture = Transform.scale(source=self.sprite_1, size=(self.sprite_1.size[0]*12,self.sprite_1.size[1]*12))
-
+        self.canvas_1.blit(source=self.sprite_1, pos=(-128,0), area=(0,0,64,64))
 
     def update(self):
         pygame.display.set_caption(title=f"Custom Graphics API | FPS: {round(self.clock.get_fps())}")
