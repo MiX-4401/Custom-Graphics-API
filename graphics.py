@@ -1,3 +1,4 @@
+# ModernGL - OpenGL Sprite Framework Version: 1.0
 import moderngl as mgl
 import numpy as np
 from PIL import Image
@@ -48,7 +49,7 @@ class Texture:
 
     def shader(self, program:mgl.Program, vao:mgl.VertexArray, uniforms:dict={}):
         dctx, dprogram, dvao = Texture.get_components()
-
+        
         # Bind framebuffer and source texture
         self.framebuffer.use()
         self.use(location=0)
